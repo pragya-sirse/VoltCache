@@ -1,16 +1,21 @@
 # VoltCache
 
-VoltCache is a Redis-inspired in-memory key-value database built in Java.
+VoltCache is a Redis-inspired in-memory key-value database built in Java. It supports concurrent client connections, TTL-based expiration, disk persistence, and command-driven architecture over TCP sockets.
+
+---
 
 ## Features
 
-- TCP Socket Server
-- Multi Client Support
-- In-Memory Key-Value Storage
-- TTL Expiration (SETEX)
-- Background Expiration Cleanup
-- Disk Persistence
-- Command Pattern Architecture
+- In-memory key-value storage
+- TCP socket-based server
+- Multi-client support using ExecutorService
+- TTL expiration with `SETEX`
+- Background expiration cleanup scheduler
+- Disk persistence across server restarts
+- Command Pattern architecture
+- ConcurrentHashMap-based storage engine
+
+---
 
 ## Supported Commands
 
@@ -19,14 +24,16 @@ VoltCache is a Redis-inspired in-memory key-value database built in Java.
 | SET key value | Store a value |
 | GET key | Retrieve a value |
 | DEL key | Delete a key |
-| EXISTS key | Check if key exists |
+| EXISTS key | Check if a key exists |
 | SETEX key ttl value | Store value with expiration |
 | KEYS | List all keys |
 | STATS | Show total keys |
 | INFO | Show server information |
 | FLUSH | Clear database |
 | PING | Health check |
-| HELP | List commands |
+| HELP | List all commands |
+
+---
 
 ## Tech Stack
 
@@ -35,28 +42,43 @@ VoltCache is a Redis-inspired in-memory key-value database built in Java.
 - TCP Sockets
 - ConcurrentHashMap
 - ExecutorService
+- ScheduledExecutorService
 
-## Run
+---
+
+## Running VoltCache
+
+### Start the server
 
 ```bash
 mvn clean install
 mvn exec:java
 ```
 
-## Connect
+### Connect using Telnet
 
 ```bash
 telnet localhost 6379
 ```
 
-## Example
+---
+
+## Example Session
 
 ```text
+Welcome to VoltCache!
+
 SET name Pragya
 OK
 
 GET name
 Pragya
+
+EXISTS name
+true
+
+SETEX otp 10 1234
+OK
 
 PING
 PONG
@@ -66,16 +88,41 @@ VoltCache Version : 1.0
 Total Keys : 1
 ```
 
+---
+
 ## Architecture
 
+```text
 Client
-↓
+   │
+   ▼
 TCP Socket
-↓
+   │
+   ▼
 VoltCache Server
-↓
-Command Layer
-↓
-Storage Layer
-↓
-Persistence
+   │
+   ▼
+Client Handler
+   │
+   ▼
+Command Parser
+   │
+   ▼
+Command Factory
+   │
+   ▼
+Storage Engine
+   │
+   ▼
+Persistence Layer
+```
+
+---
+
+## Project Highlights
+
+- Built a Redis-inspired database from scratch in Java.
+- Implemented concurrent client handling using thread pools.
+- Added TTL-based expiration with automatic background cleanup.
+- Designed a pluggable command architecture using the Command Pattern.
+- Persisted data to disk to survive server restarts.
